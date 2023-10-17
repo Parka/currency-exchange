@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import freecurrencyapi from "./api"
 
 function App() {
   const [currency1, setCurrency1] = useState("USD")
@@ -9,11 +10,16 @@ function App() {
   const [currVal2, setCurrVal2] = useState("")
 
   useEffect(() => {
-    setTimeout(() => {
-      setRate(2)
+    const fetchRate = async () => {
+      const { data } = await freecurrencyapi.latest({
+        base_currency: currency1,
+        currencies: currency2,
+      })
+      setRate(data[currency2])
       setLoading(false)
-    }, 1000)
-  }, [])
+    }
+    fetchRate()
+  }, [currency1, currency2])
 
   type OnChange = React.InputHTMLAttributes<HTMLInputElement>["onChange"]
   const onChange1: OnChange = (e) => {
