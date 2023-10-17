@@ -9,12 +9,20 @@ declare module "@everapi/freecurrencyapi-js" {
     name_plural: string
   }
   export interface Currencies extends Record<string, Currency> {}
+  interface Error {
+    message: string
+    data: never
+  }
 
   export default class Freecurrencyapi {
     constructor(key: string)
-    currencies(): Promise<{ data: Currencies }>
-    latest(config: { base_currency: string; currencies: string }): Promise<{
-      data: Record<string, number>
-    }>
+    currencies(): Promise<{ data: Currencies; message: never } | Error>
+    latest(config: { base_currency: string; currencies: string }): Promise<
+      | {
+          data: Record<string, number>
+          message: never
+        }
+      | Error
+    >
   }
 }
