@@ -38,32 +38,39 @@ function App() {
 
   return (
     <>
-      <form>
-        <div>
-          <div>
-            <input
-              type="text"
-              name="currency1"
-              id="currency1"
-              inputMode="decimal"
-              value={currVal1}
-              onChange={onChange1}
-              disabled={loading}
-            />
-            <label htmlFor="currency1">{currency1}</label>
-          </div>
-          <div>
-            <input
-              type="text"
-              name="currency2"
-              id="currency2"
-              inputMode="decimal"
-              value={currVal2}
-              onChange={onChange2}
-              disabled={loading}
-            />
-            <label htmlFor="currency2">{currency2}</label>
-          </div>
+      <h1 className="mx-3 mb-4 max-w-sm text-center text-xl font-bold sm:text-3xl ">
+        Currency exchange calculator
+      </h1>
+      <form className="flex flex-1 flex-col gap-2">
+        <div className="flex">
+          <input
+            className="mr-2 flex-1 shrink shadow-sm shadow-slate-600"
+            type="text"
+            name="currency1"
+            id="currency1"
+            inputMode="decimal"
+            value={currVal1}
+            onChange={onChange1}
+            disabled={loading}
+          />
+          <label htmlFor="currency1" className="w-10">
+            {currency1}
+          </label>
+        </div>
+        <div className="flex">
+          <input
+            className="mr-2 flex-1 shrink shadow-sm shadow-slate-600"
+            type="text"
+            name="currency2"
+            id="currency2"
+            inputMode="decimal"
+            value={currVal2}
+            onChange={onChange2}
+            disabled={loading}
+          />
+          <label htmlFor="currency2" className="w-10">
+            {currency2}
+          </label>
         </div>
       </form>
     </>
