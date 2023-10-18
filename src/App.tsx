@@ -1,44 +1,25 @@
 import { useEffect, useRef, useState } from "react"
 import freecurrencyapi from "./api"
-import { Currencies } from "@everapi/freecurrencyapi-js"
+import useCurrencies from "./hooks/useCurrencies"
 
 function App() {
-  const [currencies, setCurrencies] = useState<Currencies>({})
   const [currency1, setCurrency1] = useState("USD")
   const [currency2, setCurrency2] = useState("MXN")
-  const [loadingCurrencies, setLoadingCurrencies] = useState(true)
+  const [currencies, loadingCurrencies, retryCurrencies] = useCurrencies()
   const [loadingRates, setLoadingRates] = useState(true)
-  const loading = loadingCurrencies || loadingRates
   const [rate, setRate] = useState(0)
   const [currVal1, setCurrVal1] = useState("")
   const [currVal2, setCurrVal2] = useState("")
-  const [retry, setRetry] = useState(false)
+  const [retryRates, setRetryRates] = useState(false)
   const flagUpdate1 = useRef(false)
   const flagUpdate2 = useRef(false)
 
-  /// FETCH CURRENCIES
-  useEffect(() => {
-    if (retry) return
-    const fetchCurrencies = async () => {
-      setLoadingCurrencies(true)
-      try {
-        const response = await freecurrencyapi.currencies()
-        if (!response.data) {
-          throw response.message
-        }
-        const { data } = response
-        setCurrencies(data)
-      } catch (e) {
-        setRetry(true)
-      }
-      setLoadingCurrencies(false)
-    }
-    fetchCurrencies()
-  }, [retry])
+  const loading = loadingCurrencies || loadingRates
+  const retry = retryCurrencies || retryRates
 
   /// FETCH RATES
   useEffect(() => {
-    if (retry) return
+    if (retryRates) return
     const fetchRate = async () => {
       setLoadingRates(true)
       try {
@@ -54,12 +35,12 @@ function App() {
         const { data } = response
         setRate(data[currency2])
       } catch (e) {
-        setRetry(true)
+        setRetryRates(true)
       }
       setLoadingRates(false)
     }
     fetchRate()
-  }, [currency1, currency2, retry])
+  }, [currency1, currency2, retryRates])
 
   // UPDATE ON RATE RECIEVED
   useEffect(() => {
@@ -76,14 +57,14 @@ function App() {
 
   // SET RETRY TIMEOUT
   useEffect(() => {
-    if (!retry) return
+    if (!retryRates) return
     const timeout = setTimeout(() => {
-      setRetry(false)
+      setRetryRates(false)
     }, 30000)
     return () => {
       clearTimeout(timeout)
     }
-  }, [retry])
+  }, [retryRates])
 
   // EVENT HANDLERS INPUTS
   type OnChangeInput = React.InputHTMLAttributes<HTMLInputElement>["onChange"]
