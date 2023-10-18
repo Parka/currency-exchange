@@ -1,19 +1,22 @@
 import { useEffect, useRef, useState } from "react"
 import useCurrencies from "./hooks/useCurrencies"
 import useRates from "./hooks/useRates"
+import Loader from "./components/Loader"
 
 function App() {
   const [currency1, setCurrency1] = useState("USD")
   const [currency2, setCurrency2] = useState("MXN")
-  const [currencies, loadingCurrencies, retryCurrencies] = useCurrencies()
-  const [rate, loadingRates, retryRates] = useRates(currency1, currency2)
   const [currVal1, setCurrVal1] = useState("")
   const [currVal2, setCurrVal2] = useState("")
-  const flagUpdate1 = useRef(false)
-  const flagUpdate2 = useRef(false)
+
+  const [currencies, loadingCurrencies, retryCurrencies] = useCurrencies()
+  const [rate, loadingRates, retryRates] = useRates(currency1, currency2)
 
   const loading = loadingCurrencies || loadingRates
   const retry = retryCurrencies || retryRates
+
+  const flagUpdate1 = useRef(false)
+  const flagUpdate2 = useRef(false)
 
   // UPDATE ON RATE RECIEVED
   useEffect(() => {
@@ -56,13 +59,8 @@ function App() {
     flagUpdate2.current = true
     setCurrency2(e.target.value)
   }
-  if (retry)
-    return (
-      <>
-        <h1>WAITING FOR API</h1>
-        <span className="loader"></span>
-      </>
-    )
+
+  if (retry) return <Loader> Waiting for API</Loader>
   return (
     <>
       <h1 className="mx-3 mb-16 max-w-sm text-center text-xl font-bold sm:text-3xl ">
