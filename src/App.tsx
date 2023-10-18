@@ -1,50 +1,23 @@
 import { useEffect, useRef, useState } from "react"
-import freecurrencyapi from "./api"
 import useCurrencies from "./hooks/useCurrencies"
+import useRates from "./hooks/useRates"
 
 function App() {
   const [currency1, setCurrency1] = useState("USD")
   const [currency2, setCurrency2] = useState("MXN")
   const [currencies, loadingCurrencies, retryCurrencies] = useCurrencies()
-  const [loadingRates, setLoadingRates] = useState(true)
-  const [rate, setRate] = useState(0)
+  const [rate, loadingRates, retryRates] = useRates(currency1, currency2)
   const [currVal1, setCurrVal1] = useState("")
   const [currVal2, setCurrVal2] = useState("")
-  const [retryRates, setRetryRates] = useState(false)
   const flagUpdate1 = useRef(false)
   const flagUpdate2 = useRef(false)
 
   const loading = loadingCurrencies || loadingRates
   const retry = retryCurrencies || retryRates
 
-  /// FETCH RATES
-  useEffect(() => {
-    if (retryRates) return
-    const fetchRate = async () => {
-      setLoadingRates(true)
-      try {
-        const response = await freecurrencyapi.latest({
-          base_currency: currency1,
-          currencies: currency2,
-        })
-
-        if (!response.data) {
-          throw response.message
-        }
-
-        const { data } = response
-        setRate(data[currency2])
-      } catch (e) {
-        setRetryRates(true)
-      }
-      setLoadingRates(false)
-    }
-    fetchRate()
-  }, [currency1, currency2, retryRates])
-
   // UPDATE ON RATE RECIEVED
   useEffect(() => {
-    if (!rate) return
+    if (loadingRates) return
     if (flagUpdate1.current) {
       flagUpdate1.current = false
       setCurrVal1(String(Number(currVal2) / rate || ""))
@@ -53,18 +26,7 @@ function App() {
       flagUpdate2.current = false
       setCurrVal2(String(Number(currVal1) * rate || ""))
     }
-  }, [currVal1, currVal2, rate])
-
-  // SET RETRY TIMEOUT
-  useEffect(() => {
-    if (!retryRates) return
-    const timeout = setTimeout(() => {
-      setRetryRates(false)
-    }, 30000)
-    return () => {
-      clearTimeout(timeout)
-    }
-  }, [retryRates])
+  }, [currVal1, currVal2, rate, loadingRates])
 
   // EVENT HANDLERS INPUTS
   type OnChangeInput = React.InputHTMLAttributes<HTMLInputElement>["onChange"]
@@ -88,14 +50,10 @@ function App() {
 
   const onChangeCurrency1: onChangeSelect = (e) => {
     flagUpdate1.current = true
-    setRate(0)
-    setCurrVal1("")
     setCurrency1(e.target.value)
   }
   const onChangeCurrency2: onChangeSelect = (e) => {
     flagUpdate2.current = true
-    setRate(0)
-    setCurrVal2("")
     setCurrency2(e.target.value)
   }
   if (retry)
