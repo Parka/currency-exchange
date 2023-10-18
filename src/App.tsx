@@ -2,6 +2,12 @@ import { useEffect, useRef, useState } from "react"
 import useCurrencies from "./hooks/useCurrencies"
 import useRates from "./hooks/useRates"
 import Loader from "./components/Loader"
+import Input from "./components/Input"
+import Select from "./components/Select"
+import Title from "./components/Title"
+import Form from "./components/Form"
+import CurrencyField from "./components/CurrencyField"
+import CurrencyOptions from "./components/CurrencyOptions"
 
 function App() {
   const [currency1, setCurrency1] = useState("USD")
@@ -63,63 +69,35 @@ function App() {
   if (retry) return <Loader> Waiting for API</Loader>
   return (
     <>
-      <h1 className="mx-3 mb-16 max-w-sm text-center text-xl font-bold sm:text-3xl ">
-        Currency exchange calculator
-      </h1>
-      <form className="flex flex-1 flex-col gap-10 sm:gap-4">
-        <div className="flex flex-col-reverse sm:flex-row">
-          <input
+      <Title>Currency exchange calculator</Title>
+      <Form>
+        <CurrencyField>
+          <Input
             tabIndex={2}
-            className="flex-1 shrink rounded-b px-2 shadow-sm shadow-slate-600 sm:mr-2 sm:rounded"
-            type="text"
             name="currency1"
             id="currency1"
-            inputMode="decimal"
             value={currVal1}
             onChange={onChange1}
             disabled={loading}
           />
-          <select
-            tabIndex={1}
-            className="rounded-t sm:rounded-none"
-            value={currency1}
-            onChange={onChangeCurrency1}
-            disabled={loading}
-          >
-            {Object.values(currencies).map(({ code, name, symbol }) => (
-              <option key={code} value={code}>
-                {name} - {code} ({symbol})
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex flex-col-reverse sm:flex-row">
-          <input
+          <Select tabIndex={1} value={currency1} onChange={onChangeCurrency1} disabled={loading}>
+            <CurrencyOptions currencies={currencies} />
+          </Select>
+        </CurrencyField>
+        <CurrencyField>
+          <Input
             tabIndex={4}
-            className="flex-1 shrink rounded-b px-2 shadow-sm shadow-slate-600 sm:mr-2 sm:rounded"
-            type="text"
             name="currency2"
             id="currency2"
-            inputMode="decimal"
             value={currVal2}
             onChange={onChange2}
             disabled={loading}
           />
-          <select
-            tabIndex={3}
-            className="rounded-t sm:rounded-none"
-            value={currency2}
-            onChange={onChangeCurrency2}
-            disabled={loading}
-          >
-            {Object.values(currencies).map(({ code, name, symbol }) => (
-              <option key={code} value={code}>
-                {name} - {code} ({symbol})
-              </option>
-            ))}
-          </select>
-        </div>
-      </form>
+          <Select tabIndex={3} value={currency2} onChange={onChangeCurrency2} disabled={loading}>
+            <CurrencyOptions currencies={currencies} />
+          </Select>
+        </CurrencyField>
+      </Form>
     </>
   )
 }
